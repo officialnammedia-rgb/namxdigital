@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="NamxDigital — Premium digital agency delivering power, prestige, and performance." />
+  <title>NamxDigital — Power. Prestige. Performance.</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Montserrat:wght@200;300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <!-- Preloader -->
+  <div class="preloader" id="preloader">
+    <div class="preloader-inner">
+      <div class="preloader-logo">
+        <span class="pre-n">N</span><span class="pre-x">X</span>
+      </div>
+      <div class="preloader-bar"><div class="preloader-fill" id="preloaderFill"></div></div>
+      <p class="preloader-text">Initializing Experience</p>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav-logo">
+      <span class="logo-text">NAMX<span class="logo-accent">DIGITAL</span></span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#services" class="nav-link" data-text="Services">Services</a></li>
+      <li><a href="#about" class="nav-link" data-text="About">About</a></li>
+      <li><a href="#work" class="nav-link" data-text="Work">Work</a></li>
+      <li><a href="#contact" class="nav-link" data-text="Contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta magnetic">
+      <span>Start a Project</span>
+    </a>
+    <button class="nav-burger" id="navBurger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="#services" class="mobile-link">Services</a></li>
+      <li><a href="#about" class="mobile-link">About</a></li>
+      <li><a href="#work" class="mobile-link">Work</a></li>
+      <li><a href="#contact" class="mobile-link">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero" id="hero">
+    <canvas id="heroCanvas"></canvas>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <div class="hero-tag" data-scroll-reveal>
+        <span class="dot"></span>
+        Premium Digital Agency
+      </div>
+      <h1 class="hero-title">
+        <span class="hero-line" data-scroll-reveal>
+          <span class="word">We Build</span>
+        </span>
+        <span class="hero-line hero-line--gold" data-scroll-reveal>
+          <span class="word">Digital Empires</span>
+        </span>
+        <span class="hero-line" data-scroll-reveal>
+          <span class="word">That Last.</span>
+        </span>
+      </h1>
+      <p class="hero-sub" data-scroll-reveal>
+        Strategy. Design. Technology. Dominance.
+      </p>
+      <div class="hero-actions" data-scroll-reveal>
+        <a href="#work" class="btn-primary magnetic">
+          <span class="btn-inner">View Our Work</span>
+          <span class="btn-shine"></span>
+        </a>
+        <a href="#contact" class="btn-ghost magnetic">
+          <span>Get in Touch</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-scroll-indicator">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="stat-num" data-count="250">0</span><span class="stat-plus">+</span>
+        <p>Projects Delivered</p>
+      </div>
+      <div class="hero-stat">
+        <span class="stat-num" data-count="98">0</span><span class="stat-plus">%</span>
+        <p>Client Satisfaction</p>
+      </div>
+      <div class="hero-stat">
+        <span class="stat-num" data-count="15">0</span><span class="stat-plus">+</span>
+        <p>Industry Awards</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MARQUEE TICKER ===== -->
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="tickerTrack">
+      <span>Power</span><span class="divider">✦</span>
+      <span>Prestige</span><span class="divider">✦</span>
+      <span>Performance</span><span class="divider">✦</span>
+      <span>Premium</span><span class="divider">✦</span>
+      <span>Precision</span><span class="divider">✦</span>
+      <span>Profit</span><span class="divider">✦</span>
+      <span>Power</span><span class="divider">✦</span>
+      <span>Prestige</span><span class="divider">✦</span>
+      <span>Performance</span><span class="divider">✦</span>
+      <span>Premium</span><span class="divider">✦</span>
+      <span>Precision</span><span class="divider">✦</span>
+      <span>Profit</span><span class="divider">✦</span>
+    </div>
+  </div>
+
+  <!-- ===== PHILOSOPHY SECTION ===== -->
+  <section class="philosophy" id="philosophy">
+    <div class="container">
+      <div class="philosophy-grid">
+        <div class="philosophy-left" data-3d-block>
+          <div class="philosophy-tag">Our Philosophy</div>
+          <h2 class="philosophy-title">
+            Excellence is not a <em>goal</em>—<br />
+            it's our <span class="gold-text">minimum</span> standard.
+          </h2>
+        </div>
+        <div class="philosophy-right" data-scroll-reveal>
+          <p class="philosophy-desc">
+            NamxDigital was born from the belief that digital excellence and business dominance are inseparable. We don't just build websites — we architect digital ecosystems that generate revenue, command authority, and crush competition.
+          </p>
+          <div class="philosophy-badges">
+            <div class="badge">Strategic Thinking</div>
+            <div class="badge">Flawless Execution</div>
+            <div class="badge">ROI-Driven</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3D floating orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </section>
+
+  <!-- ===== SERVICES SECTION ===== -->
+  <section class="services" id="services">
+    <div class="container">
+      <div class="section-header" data-scroll-reveal>
+        <span class="section-label">What We Do</span>
+        <h2 class="section-title">Services Built for<br /><span class="gold-text">Market Leaders</span></h2>
+      </div>
+
+      <div class="services-grid">
+        <div class="service-card" data-tilt>
+          <div class="card-number">01</div>
+          <div class="card-icon">
+            <svg viewBox="0 0 64 64" fill="none"><path d="M32 4L60 20V44L32 60L4 44V20L32 4Z" stroke="currentColor" stroke-width="1.5"/><path d="M32 4V60M4 20L60 44M60 20L4 44" stroke="currentColor" stroke-width="0.75" opacity="0.4"/></svg>
+          </div>
+          <h3>Brand Strategy</h3>
+          <p>We forge brand identities that command rooms and close deals — built on research, psychology, and market dominance.</p>
+          <div class="card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="card-glow"></div>
+        </div>
+
+        <div class="service-card" data-tilt>
+          <div class="card-number">02</div>
+          <div class="card-icon">
+            <svg viewBox="0 0 64 64" fill="none"><rect x="8" y="8" width="48" height="48" rx="4" stroke="currentColor" stroke-width="1.5"/><path d="M8 20h48M20 20v36" stroke="currentColor" stroke-width="1.5" opacity="0.6"/><circle cx="44" cy="40" r="8" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <h3>Web Excellence</h3>
+          <p>Award-worthy digital experiences that convert visitors into loyal customers and silently communicate wealth and credibility.</p>
+          <div class="card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="card-glow"></div>
+        </div>
+
+        <div class="service-card" data-tilt>
+          <div class="card-number">03</div>
+          <div class="card-icon">
+            <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="24" stroke="currentColor" stroke-width="1.5"/><circle cx="32" cy="32" r="12" stroke="currentColor" stroke-width="1.5" opacity="0.6"/><path d="M32 8V56M8 32h48" stroke="currentColor" stroke-width="1.5" opacity="0.3"/></svg>
+          </div>
+          <h3>Digital Marketing</h3>
+          <p>Data-driven campaigns engineered for dominance — from search supremacy to social authority that drives measurable ROI.</p>
+          <div class="card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="card-glow"></div>
+        </div>
+
+        <div class="service-card" data-tilt>
+          <div class="card-number">04</div>
+          <div class="card-icon">
+            <svg viewBox="0 0 64 64" fill="none"><path d="M16 48V32M28 48V24M40 48V16M52 48V8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 56h48" stroke="currentColor" stroke-width="1.5" opacity="0.6"/></svg>
+          </div>
+          <h3>Growth Engineering</h3>
+          <p>Systems, funnels, and automation that scale your revenue predictably — because growth should never rely on luck.</p>
+          <div class="card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="card-glow"></div>
+        </div>
+
+        <div class="service-card" data-tilt>
+          <div class="card-number">05</div>
+          <div class="card-icon">
+            <svg viewBox="0 0 64 64" fill="none"><path d="M32 8L56 20V44L32 56L8 44V20L32 8Z" stroke="currentColor" stroke-width="1.5"/><path d="M32 8L32 32L56 20" stroke="currentColor" stroke-width="0.75" opacity="0.5"/></svg>
+          </div>
+          <h3>Content Empire</h3>
+          <p>Narratives that magnetize, authority content that positions you as the undisputed leader in your space.</p>
+          <div class="card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="card-glow"></div>
+        </div>
+
+        <div class="service-card service-card--cta" data-tilt>
+          <div class="cta-card-inner">
+            <h3>Ready to dominate your market?</h3>
+            <p>Let's build something extraordinary together.</p>
+            <a href="#contact" class="btn-primary magnetic">
+              <span class="btn-inner">Start Now</span>
+              <span class="btn-shine"></span>
+            </a>
+          </div>
+          <div class="card-glow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== NUMBERS SECTION ===== -->
+  <section class="numbers" id="numbers">
+    <div class="numbers-bg" id="numbersCanvas"></div>
+    <div class="container">
+      <div class="numbers-grid">
+        <div class="number-item" data-scroll-reveal>
+          <div class="number-value">
+            <span class="count-up" data-target="250">0</span><span>+</span>
+          </div>
+          <p>Projects Delivered</p>
+        </div>
+        <div class="number-item" data-scroll-reveal>
+          <div class="number-value">
+            <span>$</span><span class="count-up" data-target="47">0</span><span>M+</span>
+          </div>
+          <p>Revenue Generated for Clients</p>
+        </div>
+        <div class="number-item" data-scroll-reveal>
+          <div class="number-value">
+            <span class="count-up" data-target="15">0</span><span>+</span>
+          </div>
+          <p>Industry Awards Won</p>
+        </div>
+        <div class="number-item" data-scroll-reveal>
+          <div class="number-value">
+            <span class="count-up" data-target="98">0</span><span>%</span>
+          </div>
+          <p>Client Retention Rate</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT SECTION ===== -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-visual" data-3d-block>
+          <div class="about-img-wrap">
+            <div class="about-3d-shape">
+              <div class="shape-face shape-front"></div>
+              <div class="shape-face shape-back"></div>
+              <div class="shape-face shape-left"></div>
+              <div class="shape-face shape-right"></div>
+              <div class="shape-face shape-top"></div>
+              <div class="shape-face shape-bottom"></div>
+            </div>
+            <div class="about-badge">
+              <span>Est.</span>
+              <strong>2018</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-content">
+          <span class="section-label" data-scroll-reveal>About NamxDigital</span>
+          <h2 class="section-title" data-scroll-reveal>
+            The Agency<br />Behind the<br /><span class="gold-text">Empire Builders</span>
+          </h2>
+          <p data-scroll-reveal>
+            We are not a typical agency. We are a collective of strategists, designers, and engineers who operate at the intersection of art and science — creating digital experiences that don't just look premium, they perform like machines.
+          </p>
+          <p data-scroll-reveal>
+            Our clients are founders, CEOs, and visionaries who understand that in the digital age, your online presence is your first impression, your reputation, and your revenue generator. We make it legendary.
+          </p>
+          <div class="about-values" data-scroll-reveal>
+            <div class="value-item">
+              <div class="value-icon">⬡</div>
+              <div>
+                <h4>No Compromises</h4>
+                <p>Excellence is non-negotiable. Every pixel, every line of code.</p>
+              </div>
+            </div>
+            <div class="value-item">
+              <div class="value-icon">◈</div>
+              <div>
+                <h4>Results First</h4>
+                <p>Beautiful design means nothing without measurable business results.</p>
+              </div>
+            </div>
+          </div>
+          <a href="#contact" class="btn-primary magnetic" data-scroll-reveal>
+            <span class="btn-inner">Work With Us</span>
+            <span class="btn-shine"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WORK SECTION ===== -->
+  <section class="work" id="work">
+    <div class="container">
+      <div class="section-header" data-scroll-reveal>
+        <span class="section-label">Selected Work</span>
+        <h2 class="section-title">Case Studies in<br /><span class="gold-text">Market Domination</span></h2>
+      </div>
+    </div>
+
+    <div class="work-slider" id="workSlider">
+      <div class="work-item" data-work-item>
+        <div class="work-item-inner">
+          <div class="work-visual work-visual--1">
+            <div class="work-3d-scene"></div>
+          </div>
+          <div class="work-info">
+            <span class="work-category">Brand + Web + Growth</span>
+            <h3>Aurum Capital</h3>
+            <p>Complete digital transformation for a Tier-1 investment firm — 340% increase in qualified leads within 90 days.</p>
+            <div class="work-metric">
+              <strong>+340%</strong>
+              <span>Lead Generation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="work-item" data-work-item>
+        <div class="work-item-inner">
+          <div class="work-visual work-visual--2">
+            <div class="work-3d-scene"></div>
+          </div>
+          <div class="work-info">
+            <span class="work-category">Web + Content + SEO</span>
+            <h3>Nexus Realty</h3>
+            <p>Award-winning real estate platform that redefined luxury property presentation and drove $12M in attributed sales.</p>
+            <div class="work-metric">
+              <strong>$12M</strong>
+              <span>Attributed Revenue</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="work-item" data-work-item>
+        <div class="work-item-inner">
+          <div class="work-visual work-visual--3">
+            <div class="work-3d-scene"></div>
+          </div>
+          <div class="work-info">
+            <span class="work-category">Brand + Strategy</span>
+            <h3>Vertex Labs</h3>
+            <p>Repositioned a B2B SaaS startup as a category leader — Series A raised at $28M valuation, up from $4M pre-rebrand.</p>
+            <div class="work-metric">
+              <strong>7×</strong>
+              <span>Valuation Growth</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROCESS SECTION ===== -->
+  <section class="process" id="process">
+    <div class="container">
+      <div class="section-header" data-scroll-reveal>
+        <span class="section-label">Our Process</span>
+        <h2 class="section-title">From Vision to<br /><span class="gold-text">Victory</span></h2>
+      </div>
+
+      <div class="process-timeline">
+        <div class="process-step" data-scroll-reveal>
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h3>Discovery & Strategy</h3>
+            <p>Deep-dive into your business, market, and competitors. We develop a battle plan built on intelligence, not guesswork.</p>
+          </div>
+        </div>
+        <div class="process-step" data-scroll-reveal>
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h3>Design & Architect</h3>
+            <p>World-class creative direction meets user psychology. We craft experiences that feel inevitable and look priceless.</p>
+          </div>
+        </div>
+        <div class="process-step" data-scroll-reveal>
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h3>Build & Perfect</h3>
+            <p>Pixel-perfect development with obsessive attention to detail, speed, and performance. We don't ship until it's perfect.</p>
+          </div>
+        </div>
+        <div class="process-step" data-scroll-reveal>
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <h3>Launch & Dominate</h3>
+            <p>Strategic launch, growth amplification, and ongoing optimization. We're in your corner long after launch day.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS SECTION ===== -->
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <div class="section-header" data-scroll-reveal>
+        <span class="section-label">Client Voice</span>
+        <h2 class="section-title">What Leaders<br /><span class="gold-text">Say About Us</span></h2>
+      </div>
+
+      <div class="testimonials-track">
+        <div class="testimonial-card" data-scroll-reveal>
+          <div class="testimonial-quote">"</div>
+          <p>"NamxDigital didn't just build us a website — they built us a machine. Revenue from digital channels tripled in the first quarter. Absolutely unmatched."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">JR</div>
+            <div>
+              <strong>James Richardson</strong>
+              <span>CEO, Aurum Capital Group</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card" data-scroll-reveal>
+          <div class="testimonial-quote">"</div>
+          <p>"The rebrand changed everything. Our valuation increased 7x, and for the first time, our digital presence actually reflects the quality of our product."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">SL</div>
+            <div>
+              <strong>Sarah Lin</strong>
+              <span>Founder, Vertex Labs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card" data-scroll-reveal>
+          <div class="testimonial-quote">"</div>
+          <p>"The most professional team I've ever worked with. They think like investors, execute like engineers, and create like artists. NamxDigital is in a class of their own."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">MK</div>
+            <div>
+              <strong>Michael Kessler</strong>
+              <span>Managing Director, Nexus Realty</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT SECTION ===== -->
+  <section class="contact" id="contact">
+    <canvas id="contactCanvas"></canvas>
+    <div class="container">
+      <div class="contact-inner">
+        <div class="contact-left" data-scroll-reveal>
+          <span class="section-label">Get In Touch</span>
+          <h2 class="contact-title">
+            Ready to Build<br />Your <span class="gold-text">Empire</span>?
+          </h2>
+          <p>We work with select clients who are serious about growth. If that's you, let's talk.</p>
+
+          <div class="contact-details">
+            <a href="mailto:hello@namxdigital.com" class="contact-link">
+              <span class="contact-link-icon">✉</span>
+              hello@namxdigital.com
+            </a>
+            <div class="contact-link">
+              <span class="contact-link-icon">◎</span>
+              Available Worldwide
+            </div>
+          </div>
+
+          <div class="contact-social">
+            <a href="#" class="social-link magnetic" aria-label="Instagram">IN</a>
+            <a href="#" class="social-link magnetic" aria-label="LinkedIn">LI</a>
+            <a href="#" class="social-link magnetic" aria-label="Twitter">TW</a>
+          </div>
+        </div>
+
+        <div class="contact-form-wrap" data-scroll-reveal>
+          <form class="contact-form" id="contactForm" novalidate>
+            <div class="form-group">
+              <label for="fname">Your Name</label>
+              <input type="text" id="fname" name="name" placeholder="John Smith" required />
+              <span class="input-line"></span>
+            </div>
+            <div class="form-group">
+              <label for="femail">Email Address</label>
+              <input type="email" id="femail" name="email" placeholder="john@company.com" required />
+              <span class="input-line"></span>
+            </div>
+            <div class="form-group">
+              <label for="fcompany">Company</label>
+              <input type="text" id="fcompany" name="company" placeholder="Your Company" />
+              <span class="input-line"></span>
+            </div>
+            <div class="form-group">
+              <label for="fservice">Service Needed</label>
+              <select id="fservice" name="service">
+                <option value="">Select a service</option>
+                <option>Brand Strategy</option>
+                <option>Web Excellence</option>
+                <option>Digital Marketing</option>
+                <option>Growth Engineering</option>
+                <option>Full Partnership</option>
+              </select>
+              <span class="input-line"></span>
+            </div>
+            <div class="form-group">
+              <label for="fmessage">Your Vision</label>
+              <textarea id="fmessage" name="message" rows="4" placeholder="Tell us about your goals..."></textarea>
+              <span class="input-line"></span>
+            </div>
+            <button type="submit" class="btn-primary btn-full magnetic">
+              <span class="btn-inner">Send Message</span>
+              <span class="btn-shine"></span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-logo">
+          NAMX<span class="logo-accent">DIGITAL</span>
+        </div>
+        <p class="footer-tagline">Power. Prestige. Performance.</p>
+      </div>
+      <div class="footer-middle">
+        <div class="footer-col">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="#services">Brand Strategy</a></li>
+            <li><a href="#services">Web Excellence</a></li>
+            <li><a href="#services">Digital Marketing</a></li>
+            <li><a href="#services">Growth Engineering</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#work">Our Work</a></li>
+            <li><a href="#process">Process</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <ul>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">Twitter / X</a></li>
+            <li><a href="mailto:hello@namxdigital.com">Email Us</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 NamxDigital. All rights reserved.</p>
+        <p>Crafted with excellence.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Main Script (self-contained, no external dependencies) -->
+  <script src="js/main.js"></script>
+</body>
+</html>
