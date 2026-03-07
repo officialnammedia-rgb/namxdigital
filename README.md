@@ -8,16 +8,15 @@ Award-style 3D luxury digital agency website built with pure HTML, CSS, and vani
 
 ## 🌐 Live Site
 
-Once this repository's **GitHub Pages** is enabled, the site is available at:
-
 ```
 https://officialnammedia-rgb.github.io/namxdigital/
 ```
 
-> **To enable GitHub Pages (one-time setup):**
-> 1. Go to your repository on GitHub → **Settings** → **Pages**
-> 2. Under *Source*, select **GitHub Actions**
-> 3. Save — the site deploys automatically on every push
+> **Seeing a 404? → Merge this Pull Request.**
+>
+> The website files live on this branch. Once the PR is merged into `main`, the
+> GitHub Actions workflow (`static.yml`) automatically deploys the site to the
+> URL above — no extra configuration needed.
 
 ---
 
