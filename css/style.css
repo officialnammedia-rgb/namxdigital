@@ -774,12 +774,14 @@ body::before {
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    visibility: visible;
 }
 
 .share-modal.hidden {
     opacity: 0;
     pointer-events: none;
+    visibility: hidden;
 }
 
 .share-modal-backdrop {
