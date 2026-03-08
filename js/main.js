@@ -243,13 +243,6 @@ function generateShareLink() {
 
 // Initialize - Now always shows the surprise directly with pre-loaded photos
 document.addEventListener('DOMContentLoaded', () => {
-    // Always in viewer mode with pre-loaded photos
-    isViewerMode = true;
-    
-    // Use default pre-loaded photos
-    queenPhoto = DEFAULT_QUEEN_PHOTO;
-    balloonPhotos = [...DEFAULT_BALLOON_PHOTOS];
-    
     // Hide setup screen and show opening screen directly
     setupScreen.classList.add('hidden');
     setupViewerEventListeners();
