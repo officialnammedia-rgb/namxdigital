@@ -105,7 +105,8 @@ function loadFromLocalStorage() {
 
 // Generate shareable link
 function generateShareLink() {
-    const baseUrl = window.location.origin + window.location.pathname;
+    // Handle edge cases with query params and hash fragments
+    const baseUrl = window.location.href.split('?')[0].split('#')[0];
     return baseUrl + '?view=surprise';
 }
 
@@ -160,11 +161,23 @@ function showNoSurpriseMessage() {
     openingScreen.classList.remove('hidden');
     
     const openingContent = document.querySelector('.opening-content');
-    openingContent.innerHTML = `
-        <div class="crown-emoji">💔</div>
-        <h1 class="glitter-text">Oops!</h1>
-        <p class="opening-subtitle">No surprise has been created yet. Ask your special someone to set it up first! 💕</p>
-    `;
+    openingContent.textContent = '';
+    
+    const crownDiv = document.createElement('div');
+    crownDiv.className = 'crown-emoji';
+    crownDiv.textContent = '💔';
+    
+    const heading = document.createElement('h1');
+    heading.className = 'glitter-text';
+    heading.textContent = 'Oops!';
+    
+    const subtitle = document.createElement('p');
+    subtitle.className = 'opening-subtitle';
+    subtitle.textContent = 'No surprise has been created yet. Ask your special someone to set it up first! 💕';
+    
+    openingContent.appendChild(crownDiv);
+    openingContent.appendChild(heading);
+    openingContent.appendChild(subtitle);
 }
 
 // Show the surprise experience (for viewer mode)
@@ -296,19 +309,41 @@ function copyShareLink() {
         shareLink.setSelectionRange(0, 99999); // For mobile
         
         navigator.clipboard.writeText(shareLink.value).then(() => {
-            copyStatus.classList.remove('hidden');
-            setTimeout(() => {
-                copyStatus.classList.add('hidden');
-            }, 3000);
+            showCopySuccess();
         }).catch(err => {
-            // Fallback for older browsers
-            document.execCommand('copy');
-            copyStatus.classList.remove('hidden');
-            setTimeout(() => {
-                copyStatus.classList.add('hidden');
-            }, 3000);
+            // Fallback: try execCommand for older browsers, but handle failure gracefully
+            console.warn('Clipboard API failed, trying fallback:', err);
+            try {
+                const success = document.execCommand('copy');
+                if (success) {
+                    showCopySuccess();
+                } else {
+                    showCopyFailure();
+                }
+            } catch (fallbackErr) {
+                console.error('Copy failed:', fallbackErr);
+                showCopyFailure();
+            }
         });
     }
+}
+
+// Show copy success message
+function showCopySuccess() {
+    copyStatus.textContent = '✅ Link copied!';
+    copyStatus.classList.remove('hidden');
+    setTimeout(() => {
+        copyStatus.classList.add('hidden');
+    }, 3000);
+}
+
+// Show copy failure message
+function showCopyFailure() {
+    copyStatus.textContent = '❌ Copy failed - please copy manually';
+    copyStatus.classList.remove('hidden');
+    setTimeout(() => {
+        copyStatus.classList.add('hidden');
+    }, 3000);
 }
 
 // View surprise preview (admin preview)
