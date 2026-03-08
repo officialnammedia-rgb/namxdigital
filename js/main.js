@@ -2,6 +2,9 @@
 // WOMEN'S DAY SURPRISE - MAIN JAVASCRIPT
 // ============================================
 
+// Storage key for localStorage
+const STORAGE_KEY = 'womens_day_surprise_data';
+
 // Messages for each balloon
 const messages = [
     "You're the most incredible woman I know — strong, beautiful, and endlessly loved.",
@@ -21,6 +24,7 @@ const balloonColors = ['pink', 'red', 'lilac', 'peach', 'white', 'rose-gold', 'l
 let queenPhoto = null;
 let balloonPhotos = new Array(8).fill(null);
 let poppedBalloons = 0;
+let isViewerMode = false;
 
 // Interval IDs for cleanup
 let petalsIntervalId = null;
@@ -52,12 +56,167 @@ const revealMessage = document.getElementById('revealMessage');
 const bgMusic = document.getElementById('bgMusic');
 const musicToggle = document.getElementById('musicToggle');
 
+// Share section elements
+const shareSection = document.getElementById('shareSection');
+const shareLink = document.getElementById('shareLink');
+const copyBtn = document.getElementById('copyBtn');
+const copyStatus = document.getElementById('copyStatus');
+const viewPreviewBtn = document.getElementById('viewPreviewBtn');
+
+// Check URL parameters
+function checkViewMode() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('view') === 'surprise';
+}
+
+// Save data to localStorage
+function saveToLocalStorage() {
+    const data = {
+        queenPhoto: queenPhoto,
+        balloonPhotos: balloonPhotos,
+        timestamp: Date.now()
+    };
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        return true;
+    } catch (e) {
+        console.error('Failed to save to localStorage:', e);
+        return false;
+    }
+}
+
+// Load data from localStorage
+function loadFromLocalStorage() {
+    try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        if (data) {
+            const parsed = JSON.parse(data);
+            if (parsed.queenPhoto && parsed.balloonPhotos) {
+                queenPhoto = parsed.queenPhoto;
+                balloonPhotos = parsed.balloonPhotos;
+                return true;
+            }
+        }
+    } catch (e) {
+        console.error('Failed to load from localStorage:', e);
+    }
+    return false;
+}
+
+// Generate shareable link
+function generateShareLink() {
+    const baseUrl = window.location.origin + window.location.pathname;
+    return baseUrl + '?view=surprise';
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    createBalloonUploadSlots();
-    createAmbientElements();
-    setupEventListeners();
+    isViewerMode = checkViewMode();
+    
+    if (isViewerMode) {
+        // Viewer mode: Load photos from localStorage and start surprise
+        const hasData = loadFromLocalStorage();
+        if (hasData) {
+            // Hide setup screen and show opening screen directly
+            setupScreen.classList.add('hidden');
+            setupViewerEventListeners();
+            showSurpriseExperience();
+        } else {
+            // No data found - show message
+            showNoSurpriseMessage();
+        }
+    } else {
+        // Admin mode: Show setup screen
+        createBalloonUploadSlots();
+        createAmbientElements();
+        setupEventListeners();
+        
+        // Check if there's already saved data
+        if (loadFromLocalStorage()) {
+            updatePreviewsFromSavedData();
+            checkAllPhotosUploaded();
+        }
+    }
 });
+
+// Setup event listeners for viewer mode (only essential listeners)
+function setupViewerEventListeners() {
+    // Start popping button
+    startBtn.addEventListener('click', showBalloonScreen);
+    
+    // Close reveal modal
+    closeRevealBtn.addEventListener('click', closeReveal);
+    
+    // Music toggle
+    musicToggle.addEventListener('click', toggleMusic);
+    
+    // Sparkle effect on balloon hover
+    document.addEventListener('mousemove', handleSparkleEffect);
+}
+
+// Show message when no surprise data is found
+function showNoSurpriseMessage() {
+    setupScreen.classList.add('hidden');
+    openingScreen.classList.remove('hidden');
+    
+    const openingContent = document.querySelector('.opening-content');
+    openingContent.innerHTML = `
+        <div class="crown-emoji">💔</div>
+        <h1 class="glitter-text">Oops!</h1>
+        <p class="opening-subtitle">No surprise has been created yet. Ask your special someone to set it up first! 💕</p>
+    `;
+}
+
+// Show the surprise experience (for viewer mode)
+function showSurpriseExperience() {
+    setTimeout(() => {
+        openingScreen.classList.remove('hidden');
+        
+        // Display queen photo
+        const queenDisplay = document.getElementById('queenPhotoDisplay');
+        queenDisplay.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = queenPhoto;
+        img.alt = 'My Queen';
+        queenDisplay.appendChild(img);
+        
+        // Start falling petals
+        startPetals();
+        
+        // Start music
+        playMusic();
+    }, 300);
+}
+
+// Update previews from saved data (admin mode)
+function updatePreviewsFromSavedData() {
+    // Update queen photo preview
+    if (queenPhoto) {
+        queenPreview.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = queenPhoto;
+        img.alt = 'Queen Photo';
+        queenPreview.appendChild(img);
+    }
+    
+    // Update balloon photo previews
+    balloonPhotos.forEach((photo, index) => {
+        if (photo) {
+            const slot = document.querySelector(`.balloon-upload-slot:nth-child(${index + 1})`);
+            if (slot) {
+                slot.classList.add('uploaded');
+                
+                const existingImg = slot.querySelector('img');
+                if (existingImg) existingImg.remove();
+                
+                const img = document.createElement('img');
+                img.src = photo;
+                img.alt = `Balloon ${index + 1} Photo`;
+                slot.appendChild(img);
+            }
+        }
+    });
+}
 
 // Create balloon upload slots
 function createBalloonUploadSlots() {
@@ -105,7 +264,7 @@ function setupEventListeners() {
     queenPhotoInput.addEventListener('change', handleQueenPhotoUpload);
     
     // Create surprise button
-    createBtn.addEventListener('click', startSurprise);
+    createBtn.addEventListener('click', createSurprise);
     
     // Start popping button
     startBtn.addEventListener('click', showBalloonScreen);
@@ -118,6 +277,64 @@ function setupEventListeners() {
     
     // Sparkle effect on balloon hover
     document.addEventListener('mousemove', handleSparkleEffect);
+    
+    // Copy link button
+    if (copyBtn) {
+        copyBtn.addEventListener('click', copyShareLink);
+    }
+    
+    // View preview button
+    if (viewPreviewBtn) {
+        viewPreviewBtn.addEventListener('click', viewSurprisePreview);
+    }
+}
+
+// Copy share link to clipboard
+function copyShareLink() {
+    if (shareLink) {
+        shareLink.select();
+        shareLink.setSelectionRange(0, 99999); // For mobile
+        
+        navigator.clipboard.writeText(shareLink.value).then(() => {
+            copyStatus.classList.remove('hidden');
+            setTimeout(() => {
+                copyStatus.classList.add('hidden');
+            }, 3000);
+        }).catch(err => {
+            // Fallback for older browsers
+            document.execCommand('copy');
+            copyStatus.classList.remove('hidden');
+            setTimeout(() => {
+                copyStatus.classList.add('hidden');
+            }, 3000);
+        });
+    }
+}
+
+// View surprise preview (admin preview)
+function viewSurprisePreview() {
+    window.open(generateShareLink(), '_blank');
+}
+
+// Create surprise (save data and show share link)
+function createSurprise() {
+    // Save to localStorage
+    if (saveToLocalStorage()) {
+        // Show share section
+        shareSection.classList.remove('hidden');
+        
+        // Generate and display share link
+        shareLink.value = generateShareLink();
+        
+        // Disable create button and show success
+        createBtn.textContent = '✅ Surprise Created!';
+        createBtn.disabled = true;
+        
+        // Scroll to share section
+        shareSection.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        alert('Failed to save surprise. Please try again.');
+    }
 }
 
 // Handle queen photo upload
@@ -173,31 +390,6 @@ function checkAllPhotosUploaded() {
     const allUploaded = queenPhoto !== null && allBalloonPhotosUploaded;
     
     createBtn.disabled = !allUploaded;
-}
-
-// Start the surprise experience
-function startSurprise() {
-    // Hide setup screen
-    setupScreen.classList.add('hidden');
-    
-    // Show opening screen
-    setTimeout(() => {
-        openingScreen.classList.remove('hidden');
-        
-        // Display queen photo
-        const queenDisplay = document.getElementById('queenPhotoDisplay');
-        queenDisplay.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = queenPhoto;
-        img.alt = 'My Queen';
-        queenDisplay.appendChild(img);
-        
-        // Start falling petals
-        startPetals();
-        
-        // Start music
-        playMusic();
-    }, 300);
 }
 
 // Start falling petals animation

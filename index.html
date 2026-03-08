@@ -41,6 +41,18 @@
             <button class="create-btn" id="createBtn" disabled>
                 Create Surprise 🎀
             </button>
+            
+            <!-- Share Link Section (shown after creating surprise) -->
+            <div class="share-section hidden" id="shareSection">
+                <h3>🎉 Surprise Created!</h3>
+                <p>Share this special link with your loved one:</p>
+                <div class="share-link-container">
+                    <input type="text" id="shareLink" readonly>
+                    <button class="copy-btn" id="copyBtn">📋 Copy</button>
+                </div>
+                <p class="copy-status hidden" id="copyStatus">✅ Link copied!</p>
+                <button class="view-preview-btn" id="viewPreviewBtn">👀 Preview Surprise</button>
+            </div>
         </div>
     </div>
     
