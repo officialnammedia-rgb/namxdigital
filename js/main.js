@@ -5,6 +5,10 @@
 // Storage key for localStorage
 const STORAGE_KEY = 'womens_day_surprise_data';
 
+// Maximum image dimension for compression (smaller = smaller URL)
+const MAX_IMAGE_SIZE = 300;
+const JPEG_QUALITY = 0.6;
+
 // Messages for each balloon
 const messages = [
     "You're the most incredible woman I know — strong, beautiful, and endlessly loved.",
@@ -103,10 +107,103 @@ function loadFromLocalStorage() {
     return false;
 }
 
-// Generate shareable link
+// Compress an image to reduce size for URL embedding
+function compressImage(dataUrl) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            
+            // Scale down if too large
+            if (width > height && width > MAX_IMAGE_SIZE) {
+                height = (height * MAX_IMAGE_SIZE) / width;
+                width = MAX_IMAGE_SIZE;
+            } else if (height > MAX_IMAGE_SIZE) {
+                width = (width * MAX_IMAGE_SIZE) / height;
+                height = MAX_IMAGE_SIZE;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convert to JPEG for smaller size
+            resolve(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
+        };
+        img.src = dataUrl;
+    });
+}
+
+// Encode data for URL (using base64 and compression-friendly encoding)
+function encodeDataForUrl(data) {
+    try {
+        const jsonStr = JSON.stringify(data);
+        // Use base64 encoding that's URL-safe
+        const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+        // Make URL-safe
+        return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    } catch (e) {
+        console.error('Failed to encode data:', e);
+        return null;
+    }
+}
+
+// Decode data from URL
+function decodeDataFromUrl(encoded) {
+    try {
+        // Restore base64 from URL-safe version
+        let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+        // Add padding if needed
+        while (base64.length % 4) {
+            base64 += '=';
+        }
+        const jsonStr = decodeURIComponent(escape(atob(base64)));
+        return JSON.parse(jsonStr);
+    } catch (e) {
+        console.error('Failed to decode data:', e);
+        return null;
+    }
+}
+
+// Load data from URL hash
+function loadFromUrlHash() {
+    try {
+        const hash = window.location.hash;
+        if (hash && hash.startsWith('#data=')) {
+            const encoded = hash.substring(6); // Remove '#data='
+            const data = decodeDataFromUrl(encoded);
+            if (data && data.queenPhoto && data.balloonPhotos) {
+                queenPhoto = data.queenPhoto;
+                balloonPhotos = data.balloonPhotos;
+                return true;
+            }
+        }
+    } catch (e) {
+        console.error('Failed to load from URL:', e);
+    }
+    return false;
+}
+
+// Generate shareable link with embedded data
 function generateShareLink() {
     // Handle edge cases with query params and hash fragments
     const baseUrl = window.location.href.split('?')[0].split('#')[0];
+    
+    // Create data object with compressed images
+    const data = {
+        queenPhoto: queenPhoto,
+        balloonPhotos: balloonPhotos
+    };
+    
+    const encoded = encodeDataForUrl(data);
+    if (encoded) {
+        return baseUrl + '?view=surprise#data=' + encoded;
+    }
+    
+    // Fallback to localStorage-based link
     return baseUrl + '?view=surprise';
 }
 
@@ -115,8 +212,9 @@ document.addEventListener('DOMContentLoaded', () => {
     isViewerMode = checkViewMode();
     
     if (isViewerMode) {
-        // Viewer mode: Load photos from localStorage and start surprise
-        const hasData = loadFromLocalStorage();
+        // Viewer mode: Load photos from URL hash first, then localStorage as fallback
+        const hasUrlData = loadFromUrlHash();
+        const hasData = hasUrlData || loadFromLocalStorage();
         if (hasData) {
             // Hide setup screen and show opening screen directly
             setupScreen.classList.add('hidden');
@@ -377,8 +475,10 @@ function handleQueenPhotoUpload(e) {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => {
-            queenPhoto = event.target.result;
+        reader.onload = async (event) => {
+            // Compress the image for URL embedding
+            const compressed = await compressImage(event.target.result);
+            queenPhoto = compressed;
             queenPreview.innerHTML = '';
             const img = document.createElement('img');
             img.src = queenPhoto;
@@ -397,8 +497,10 @@ function handleBalloonPhotoUpload(e) {
     
     if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => {
-            balloonPhotos[index] = event.target.result;
+        reader.onload = async (event) => {
+            // Compress the image for URL embedding
+            const compressed = await compressImage(event.target.result);
+            balloonPhotos[index] = compressed;
             
             // Update preview
             const slot = e.target.closest('.balloon-upload-slot');
@@ -409,7 +511,7 @@ function handleBalloonPhotoUpload(e) {
             if (existingImg) existingImg.remove();
             
             const img = document.createElement('img');
-            img.src = event.target.result;
+            img.src = compressed;
             img.alt = `Balloon ${index + 1} Photo`;
             slot.appendChild(img);
             
