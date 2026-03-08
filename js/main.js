@@ -2,12 +2,25 @@
 // WOMEN'S DAY SURPRISE - MAIN JAVASCRIPT
 // ============================================
 
-// Storage key for localStorage
-const STORAGE_KEY = 'womens_day_surprise_data';
+// ============================================
+// PRE-LOADED PHOTOS MODE
+// Simply add your photos to the images folder:
+// - images/queen.jpg (the main opening photo)
+// - images/balloon1.jpg through images/balloon8.jpg (8 balloon photos)
+// ============================================
 
-// Maximum image dimension for compression (smaller = smaller URL)
-const MAX_IMAGE_SIZE = 300;
-const JPEG_QUALITY = 0.6;
+// Default photos (pre-loaded from images folder)
+const DEFAULT_QUEEN_PHOTO = 'images/queen.jpg';
+const DEFAULT_BALLOON_PHOTOS = [
+    'images/balloon1.jpg',
+    'images/balloon2.jpg',
+    'images/balloon3.jpg',
+    'images/balloon4.jpg',
+    'images/balloon5.jpg',
+    'images/balloon6.jpg',
+    'images/balloon7.jpg',
+    'images/balloon8.jpg'
+];
 
 // Messages for each balloon
 const messages = [
@@ -24,11 +37,11 @@ const messages = [
 // Balloon colors
 const balloonColors = ['pink', 'red', 'lilac', 'peach', 'white', 'rose-gold', 'lavender', 'coral'];
 
-// State
-let queenPhoto = null;
-let balloonPhotos = new Array(8).fill(null);
+// State - now using pre-loaded defaults
+let queenPhoto = DEFAULT_QUEEN_PHOTO;
+let balloonPhotos = [...DEFAULT_BALLOON_PHOTOS];
 let poppedBalloons = 0;
-let isViewerMode = false;
+let isViewerMode = true; // Always viewer mode now
 
 // Interval IDs for cleanup
 let petalsIntervalId = null;
@@ -228,35 +241,19 @@ function generateShareLink() {
     return baseUrl + '?view=surprise';
 }
 
-// Initialize
+// Initialize - Now always shows the surprise directly with pre-loaded photos
 document.addEventListener('DOMContentLoaded', () => {
-    isViewerMode = checkViewMode();
+    // Always in viewer mode with pre-loaded photos
+    isViewerMode = true;
     
-    if (isViewerMode) {
-        // Viewer mode: Load photos from URL hash first, then localStorage as fallback
-        const hasUrlData = loadFromUrlHash();
-        const hasData = hasUrlData || loadFromLocalStorage();
-        if (hasData) {
-            // Hide setup screen and show opening screen directly
-            setupScreen.classList.add('hidden');
-            setupViewerEventListeners();
-            showSurpriseExperience();
-        } else {
-            // No data found - show message
-            showNoSurpriseMessage();
-        }
-    } else {
-        // Admin mode: Show setup screen
-        createBalloonUploadSlots();
-        createAmbientElements();
-        setupEventListeners();
-        
-        // Check if there's already saved data
-        if (loadFromLocalStorage()) {
-            updatePreviewsFromSavedData();
-            checkAllPhotosUploaded();
-        }
-    }
+    // Use default pre-loaded photos
+    queenPhoto = DEFAULT_QUEEN_PHOTO;
+    balloonPhotos = [...DEFAULT_BALLOON_PHOTOS];
+    
+    // Hide setup screen and show opening screen directly
+    setupScreen.classList.add('hidden');
+    setupViewerEventListeners();
+    showSurpriseExperience();
 });
 
 // Setup event listeners for viewer mode (only essential listeners)
