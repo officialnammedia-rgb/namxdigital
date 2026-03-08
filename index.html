@@ -41,6 +41,18 @@
             <button class="create-btn" id="createBtn" disabled>
                 Create Surprise 🎀
             </button>
+            
+            <!-- Share Link Section (shown after creating surprise) -->
+            <div class="share-section hidden" id="shareSection">
+                <h3>🎉 Surprise Created!</h3>
+                <p>Share this special link with your loved one:</p>
+                <div class="share-link-container">
+                    <input type="text" id="shareLink" readonly>
+                    <button class="copy-btn" id="copyBtn">📋 Copy</button>
+                </div>
+                <p class="copy-status hidden" id="copyStatus">✅ Link copied!</p>
+                <button class="view-preview-btn" id="viewPreviewBtn">👀 Preview Surprise</button>
+            </div>
         </div>
     </div>
     
@@ -80,6 +92,27 @@
             <div class="reveal-photo" id="revealPhoto"></div>
             <p class="reveal-message" id="revealMessage"></p>
             <button class="close-btn" id="closeReveal">✕</button>
+        </div>
+    </div>
+    
+    <!-- Share Link Modal (Popup) -->
+    <div class="share-modal hidden" id="shareModal" role="dialog" aria-modal="true" aria-labelledby="shareModalTitle">
+        <div class="share-modal-backdrop" id="shareModalBackdrop"></div>
+        <div class="share-modal-content">
+            <button class="share-modal-close" id="shareModalClose" aria-label="Close modal">✕</button>
+            <div class="share-modal-icon">🎉</div>
+            <h2 class="share-modal-title" id="shareModalTitle">Surprise Created!</h2>
+            <p class="share-modal-subtitle">Share this magical link with your loved one:</p>
+            <div class="share-modal-link-box">
+                <label for="shareModalLink" class="visually-hidden">Shareable surprise link</label>
+                <input type="text" id="shareModalLink" readonly placeholder="Your shareable link will appear here..." aria-label="Shareable surprise link">
+            </div>
+            <button class="share-modal-copy-btn" id="shareModalCopyBtn">
+                <span class="copy-icon">📋</span>
+                <span class="copy-text">Copy Link</span>
+            </button>
+            <p class="share-modal-copy-status hidden" id="shareModalCopyStatus" role="status">✅ Link copied to clipboard!</p>
+            <button class="share-modal-preview-btn" id="shareModalPreviewBtn">👀 Preview Surprise</button>
         </div>
     </div>
     

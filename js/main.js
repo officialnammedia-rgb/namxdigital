@@ -2,6 +2,26 @@
 // WOMEN'S DAY SURPRISE - MAIN JAVASCRIPT
 // ============================================
 
+// ============================================
+// PRE-LOADED PHOTOS MODE
+// Simply add your photos to the images folder:
+// - images/queen.jpg (the main opening photo)
+// - images/balloon1.jpg through images/balloon8.jpg (8 balloon photos)
+// ============================================
+
+// Default photos (pre-loaded from images folder)
+const DEFAULT_QUEEN_PHOTO = 'images/queen.jpg';
+const DEFAULT_BALLOON_PHOTOS = [
+    'images/balloon1.jpg',
+    'images/balloon2.jpg',
+    'images/balloon3.jpg',
+    'images/balloon4.jpg',
+    'images/balloon5.jpg',
+    'images/balloon6.jpg',
+    'images/balloon7.jpg',
+    'images/balloon8.jpg'
+];
+
 // Messages for each balloon
 const messages = [
     "You're the most incredible woman I know — strong, beautiful, and endlessly loved.",
@@ -17,10 +37,11 @@ const messages = [
 // Balloon colors
 const balloonColors = ['pink', 'red', 'lilac', 'peach', 'white', 'rose-gold', 'lavender', 'coral'];
 
-// State
-let queenPhoto = null;
-let balloonPhotos = new Array(8).fill(null);
+// State - now using pre-loaded defaults
+let queenPhoto = DEFAULT_QUEEN_PHOTO;
+let balloonPhotos = [...DEFAULT_BALLOON_PHOTOS];
 let poppedBalloons = 0;
+let isViewerMode = true; // Always viewer mode now
 
 // Interval IDs for cleanup
 let petalsIntervalId = null;
@@ -52,12 +73,272 @@ const revealMessage = document.getElementById('revealMessage');
 const bgMusic = document.getElementById('bgMusic');
 const musicToggle = document.getElementById('musicToggle');
 
-// Initialize
+// Share section elements (inline - kept for compatibility)
+const shareSection = document.getElementById('shareSection');
+const shareLink = document.getElementById('shareLink');
+const copyBtn = document.getElementById('copyBtn');
+const copyStatus = document.getElementById('copyStatus');
+const viewPreviewBtn = document.getElementById('viewPreviewBtn');
+
+// Share modal elements (popup)
+const shareModal = document.getElementById('shareModal');
+const shareModalBackdrop = document.getElementById('shareModalBackdrop');
+const shareModalClose = document.getElementById('shareModalClose');
+const shareModalLink = document.getElementById('shareModalLink');
+const shareModalCopyBtn = document.getElementById('shareModalCopyBtn');
+const shareModalCopyStatus = document.getElementById('shareModalCopyStatus');
+const shareModalPreviewBtn = document.getElementById('shareModalPreviewBtn');
+
+// Check URL parameters
+function checkViewMode() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('view') === 'surprise';
+}
+
+// Save data to localStorage
+function saveToLocalStorage() {
+    const data = {
+        queenPhoto: queenPhoto,
+        balloonPhotos: balloonPhotos,
+        timestamp: Date.now()
+    };
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        return true;
+    } catch (e) {
+        console.error('Failed to save to localStorage:', e);
+        return false;
+    }
+}
+
+// Load data from localStorage
+function loadFromLocalStorage() {
+    try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        if (data) {
+            const parsed = JSON.parse(data);
+            if (parsed.queenPhoto && parsed.balloonPhotos) {
+                queenPhoto = parsed.queenPhoto;
+                balloonPhotos = parsed.balloonPhotos;
+                return true;
+            }
+        }
+    } catch (e) {
+        console.error('Failed to load from localStorage:', e);
+    }
+    return false;
+}
+
+// Compress an image to reduce size for URL embedding
+function compressImage(dataUrl) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            
+            // Scale down if too large
+            if (width > height && width > MAX_IMAGE_SIZE) {
+                height = (height * MAX_IMAGE_SIZE) / width;
+                width = MAX_IMAGE_SIZE;
+            } else if (height > MAX_IMAGE_SIZE) {
+                width = (width * MAX_IMAGE_SIZE) / height;
+                height = MAX_IMAGE_SIZE;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Convert to JPEG for smaller size
+            resolve(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
+        };
+        img.src = dataUrl;
+    });
+}
+
+// Encode data for URL (using base64 and UTF-8 encoding)
+function encodeDataForUrl(data) {
+    try {
+        const jsonStr = JSON.stringify(data);
+        // Use TextEncoder for proper UTF-8 handling
+        const encoder = new TextEncoder();
+        const uint8Array = encoder.encode(jsonStr);
+        // Convert to base64
+        const binaryStr = Array.from(uint8Array).map(byte => String.fromCharCode(byte)).join('');
+        const base64 = btoa(binaryStr);
+        // Make URL-safe
+        return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    } catch (e) {
+        console.error('Failed to encode data:', e);
+        return null;
+    }
+}
+
+// Decode data from URL
+function decodeDataFromUrl(encoded) {
+    try {
+        // Restore base64 from URL-safe version
+        let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+        // Add padding if needed
+        while (base64.length % 4) {
+            base64 += '=';
+        }
+        // Decode base64 to binary string
+        const binaryStr = atob(base64);
+        // Convert to Uint8Array and decode with TextDecoder
+        const uint8Array = new Uint8Array(binaryStr.length);
+        for (let i = 0; i < binaryStr.length; i++) {
+            uint8Array[i] = binaryStr.charCodeAt(i);
+        }
+        const decoder = new TextDecoder('utf-8');
+        const jsonStr = decoder.decode(uint8Array);
+        return JSON.parse(jsonStr);
+    } catch (e) {
+        console.error('Failed to decode data:', e);
+        return null;
+    }
+}
+
+// Load data from URL hash
+function loadFromUrlHash() {
+    try {
+        const hash = window.location.hash;
+        if (hash && hash.startsWith('#data=')) {
+            const encoded = hash.substring(6); // Remove '#data='
+            const data = decodeDataFromUrl(encoded);
+            if (data && data.queenPhoto && data.balloonPhotos) {
+                queenPhoto = data.queenPhoto;
+                balloonPhotos = data.balloonPhotos;
+                return true;
+            }
+        }
+    } catch (e) {
+        console.error('Failed to load from URL:', e);
+    }
+    return false;
+}
+
+// Generate shareable link with embedded data
+function generateShareLink() {
+    // Handle edge cases with query params and hash fragments
+    const baseUrl = window.location.href.split('?')[0].split('#')[0];
+    
+    // Create data object with compressed images
+    const data = {
+        queenPhoto: queenPhoto,
+        balloonPhotos: balloonPhotos
+    };
+    
+    const encoded = encodeDataForUrl(data);
+    if (encoded) {
+        return baseUrl + '?view=surprise#data=' + encoded;
+    }
+    
+    // Fallback to localStorage-based link
+    return baseUrl + '?view=surprise';
+}
+
+// Initialize - Now always shows the surprise directly with pre-loaded photos
 document.addEventListener('DOMContentLoaded', () => {
-    createBalloonUploadSlots();
-    createAmbientElements();
-    setupEventListeners();
+    // Hide setup screen and show opening screen directly
+    setupScreen.classList.add('hidden');
+    setupViewerEventListeners();
+    showSurpriseExperience();
 });
+
+// Setup event listeners for viewer mode (only essential listeners)
+function setupViewerEventListeners() {
+    // Start popping button
+    startBtn.addEventListener('click', showBalloonScreen);
+    
+    // Close reveal modal
+    closeRevealBtn.addEventListener('click', closeReveal);
+    
+    // Music toggle
+    musicToggle.addEventListener('click', toggleMusic);
+    
+    // Sparkle effect on balloon hover
+    document.addEventListener('mousemove', handleSparkleEffect);
+}
+
+// Show message when no surprise data is found
+function showNoSurpriseMessage() {
+    setupScreen.classList.add('hidden');
+    openingScreen.classList.remove('hidden');
+    
+    const openingContent = document.querySelector('.opening-content');
+    openingContent.textContent = '';
+    
+    const crownDiv = document.createElement('div');
+    crownDiv.className = 'crown-emoji';
+    crownDiv.textContent = '💔';
+    
+    const heading = document.createElement('h1');
+    heading.className = 'glitter-text';
+    heading.textContent = 'Oops!';
+    
+    const subtitle = document.createElement('p');
+    subtitle.className = 'opening-subtitle';
+    subtitle.textContent = 'No surprise has been created yet. Ask your special someone to set it up first! 💕';
+    
+    openingContent.appendChild(crownDiv);
+    openingContent.appendChild(heading);
+    openingContent.appendChild(subtitle);
+}
+
+// Show the surprise experience (for viewer mode)
+function showSurpriseExperience() {
+    setTimeout(() => {
+        openingScreen.classList.remove('hidden');
+        
+        // Display queen photo
+        const queenDisplay = document.getElementById('queenPhotoDisplay');
+        queenDisplay.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = queenPhoto;
+        img.alt = 'My Queen';
+        queenDisplay.appendChild(img);
+        
+        // Start falling petals
+        startPetals();
+        
+        // Start music
+        playMusic();
+    }, 300);
+}
+
+// Update previews from saved data (admin mode)
+function updatePreviewsFromSavedData() {
+    // Update queen photo preview
+    if (queenPhoto) {
+        queenPreview.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = queenPhoto;
+        img.alt = 'Queen Photo';
+        queenPreview.appendChild(img);
+    }
+    
+    // Update balloon photo previews
+    balloonPhotos.forEach((photo, index) => {
+        if (photo) {
+            const slot = document.querySelector(`.balloon-upload-slot:nth-child(${index + 1})`);
+            if (slot) {
+                slot.classList.add('uploaded');
+                
+                const existingImg = slot.querySelector('img');
+                if (existingImg) existingImg.remove();
+                
+                const img = document.createElement('img');
+                img.src = photo;
+                img.alt = `Balloon ${index + 1} Photo`;
+                slot.appendChild(img);
+            }
+        }
+    });
+}
 
 // Create balloon upload slots
 function createBalloonUploadSlots() {
@@ -105,7 +386,7 @@ function setupEventListeners() {
     queenPhotoInput.addEventListener('change', handleQueenPhotoUpload);
     
     // Create surprise button
-    createBtn.addEventListener('click', startSurprise);
+    createBtn.addEventListener('click', createSurprise);
     
     // Start popping button
     startBtn.addEventListener('click', showBalloonScreen);
@@ -118,6 +399,178 @@ function setupEventListeners() {
     
     // Sparkle effect on balloon hover
     document.addEventListener('mousemove', handleSparkleEffect);
+    
+    // Copy link button
+    if (copyBtn) {
+        copyBtn.addEventListener('click', copyShareLink);
+    }
+    
+    // View preview button
+    if (viewPreviewBtn) {
+        viewPreviewBtn.addEventListener('click', viewSurprisePreview);
+    }
+    
+    // Share modal event listeners
+    if (shareModalClose) {
+        shareModalClose.addEventListener('click', closeShareModal);
+    }
+    if (shareModalBackdrop) {
+        shareModalBackdrop.addEventListener('click', closeShareModal);
+    }
+    if (shareModalCopyBtn) {
+        shareModalCopyBtn.addEventListener('click', copyShareModalLink);
+    }
+    if (shareModalPreviewBtn) {
+        shareModalPreviewBtn.addEventListener('click', previewFromModal);
+    }
+}
+
+// Copy share link to clipboard
+function copyShareLink() {
+    if (shareLink) {
+        shareLink.select();
+        shareLink.setSelectionRange(0, 99999); // For mobile
+        
+        navigator.clipboard.writeText(shareLink.value).then(() => {
+            showCopySuccess();
+        }).catch(err => {
+            // Fallback: try execCommand for older browsers, but handle failure gracefully
+            console.warn('Clipboard API failed, trying fallback:', err);
+            try {
+                const success = document.execCommand('copy');
+                if (success) {
+                    showCopySuccess();
+                } else {
+                    showCopyFailure();
+                }
+            } catch (fallbackErr) {
+                console.error('Copy failed:', fallbackErr);
+                showCopyFailure();
+            }
+        });
+    }
+}
+
+// Show copy success message
+function showCopySuccess() {
+    copyStatus.textContent = '✅ Link copied!';
+    copyStatus.classList.remove('hidden');
+    setTimeout(() => {
+        copyStatus.classList.add('hidden');
+    }, 3000);
+}
+
+// Show copy failure message
+function showCopyFailure() {
+    copyStatus.textContent = '❌ Copy failed - please copy manually';
+    copyStatus.classList.remove('hidden');
+    setTimeout(() => {
+        copyStatus.classList.add('hidden');
+    }, 3000);
+}
+
+// View surprise preview (admin preview)
+function viewSurprisePreview() {
+    window.open(generateShareLink(), '_blank');
+}
+
+// Close share modal
+function closeShareModal() {
+    shareModal.classList.add('hidden');
+    // Return focus to the create button for accessibility
+    if (createBtn) {
+        createBtn.focus();
+    }
+}
+
+// Copy link from share modal
+function copyShareModalLink() {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareModalLink.value).then(() => {
+            showModalCopySuccess();
+        }).catch((err) => {
+            console.error('Failed to copy:', err);
+            fallbackModalCopy();
+        });
+    } else {
+        fallbackModalCopy();
+    }
+}
+
+// Fallback copy for share modal
+function fallbackModalCopy() {
+    try {
+        shareModalLink.select();
+        shareModalLink.setSelectionRange(0, 99999);
+        const success = document.execCommand('copy');
+        if (success) {
+            showModalCopySuccess();
+        } else {
+            showModalCopyFailure();
+        }
+    } catch (err) {
+        console.error('Fallback copy failed:', err);
+        showModalCopyFailure();
+    }
+}
+
+// Show copy success in modal
+function showModalCopySuccess() {
+    shareModalCopyStatus.textContent = '✅ Link copied to clipboard!';
+    shareModalCopyStatus.classList.remove('hidden');
+    
+    // Update button temporarily
+    const originalText = shareModalCopyBtn.innerHTML;
+    shareModalCopyBtn.innerHTML = '<span class="copy-icon">✅</span><span class="copy-text">Copied!</span>';
+    
+    setTimeout(() => {
+        shareModalCopyStatus.classList.add('hidden');
+        shareModalCopyBtn.innerHTML = originalText;
+    }, 3000);
+}
+
+// Show copy failure in modal
+function showModalCopyFailure() {
+    shareModalCopyStatus.textContent = '❌ Copy failed - please copy manually';
+    shareModalCopyStatus.classList.remove('hidden');
+    setTimeout(() => {
+        shareModalCopyStatus.classList.add('hidden');
+    }, 3000);
+}
+
+// Preview surprise from modal
+function previewFromModal() {
+    window.open(shareModalLink.value, '_blank');
+}
+
+// Create surprise (save data and show share link modal)
+function createSurprise() {
+    // Save to localStorage
+    if (saveToLocalStorage()) {
+        // Generate the share link
+        const link = generateShareLink();
+        
+        // Show the modal popup
+        shareModal.classList.remove('hidden');
+        
+        // Set the link in the modal
+        shareModalLink.value = link;
+        
+        // Focus on the copy button for accessibility
+        if (shareModalCopyBtn) {
+            setTimeout(() => shareModalCopyBtn.focus(), 100);
+        }
+        
+        // Also update inline share section (for compatibility)
+        shareSection.classList.remove('hidden');
+        shareLink.value = link;
+        
+        // Disable create button and show success
+        createBtn.textContent = '✅ Surprise Created!';
+        createBtn.disabled = true;
+    } else {
+        alert('Failed to save surprise. Please try again.');
+    }
 }
 
 // Handle queen photo upload
@@ -125,8 +578,10 @@ function handleQueenPhotoUpload(e) {
     const file = e.target.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => {
-            queenPhoto = event.target.result;
+        reader.onload = async (event) => {
+            // Compress the image for URL embedding
+            const compressed = await compressImage(event.target.result);
+            queenPhoto = compressed;
             queenPreview.innerHTML = '';
             const img = document.createElement('img');
             img.src = queenPhoto;
@@ -145,8 +600,10 @@ function handleBalloonPhotoUpload(e) {
     
     if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => {
-            balloonPhotos[index] = event.target.result;
+        reader.onload = async (event) => {
+            // Compress the image for URL embedding
+            const compressed = await compressImage(event.target.result);
+            balloonPhotos[index] = compressed;
             
             // Update preview
             const slot = e.target.closest('.balloon-upload-slot');
@@ -157,7 +614,7 @@ function handleBalloonPhotoUpload(e) {
             if (existingImg) existingImg.remove();
             
             const img = document.createElement('img');
-            img.src = event.target.result;
+            img.src = compressed;
             img.alt = `Balloon ${index + 1} Photo`;
             slot.appendChild(img);
             
@@ -173,31 +630,6 @@ function checkAllPhotosUploaded() {
     const allUploaded = queenPhoto !== null && allBalloonPhotosUploaded;
     
     createBtn.disabled = !allUploaded;
-}
-
-// Start the surprise experience
-function startSurprise() {
-    // Hide setup screen
-    setupScreen.classList.add('hidden');
-    
-    // Show opening screen
-    setTimeout(() => {
-        openingScreen.classList.remove('hidden');
-        
-        // Display queen photo
-        const queenDisplay = document.getElementById('queenPhotoDisplay');
-        queenDisplay.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = queenPhoto;
-        img.alt = 'My Queen';
-        queenDisplay.appendChild(img);
-        
-        // Start falling petals
-        startPetals();
-        
-        // Start music
-        playMusic();
-    }, 300);
 }
 
 // Start falling petals animation
