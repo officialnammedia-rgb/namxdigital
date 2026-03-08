@@ -95,6 +95,27 @@
         </div>
     </div>
     
+    <!-- Share Link Modal (Popup) -->
+    <div class="share-modal hidden" id="shareModal" role="dialog" aria-modal="true" aria-labelledby="shareModalTitle">
+        <div class="share-modal-backdrop" id="shareModalBackdrop"></div>
+        <div class="share-modal-content">
+            <button class="share-modal-close" id="shareModalClose" aria-label="Close modal">✕</button>
+            <div class="share-modal-icon">🎉</div>
+            <h2 class="share-modal-title" id="shareModalTitle">Surprise Created!</h2>
+            <p class="share-modal-subtitle">Share this magical link with your loved one:</p>
+            <div class="share-modal-link-box">
+                <label for="shareModalLink" class="visually-hidden">Shareable surprise link</label>
+                <input type="text" id="shareModalLink" readonly placeholder="Your shareable link will appear here..." aria-label="Shareable surprise link">
+            </div>
+            <button class="share-modal-copy-btn" id="shareModalCopyBtn">
+                <span class="copy-icon">📋</span>
+                <span class="copy-text">Copy Link</span>
+            </button>
+            <p class="share-modal-copy-status hidden" id="shareModalCopyStatus" role="status">✅ Link copied to clipboard!</p>
+            <button class="share-modal-preview-btn" id="shareModalPreviewBtn">👀 Preview Surprise</button>
+        </div>
+    </div>
+    
     <!-- Final Screen -->
     <div class="screen final-screen hidden" id="finalScreen">
         <div class="rose-rain" id="roseRain"></div>

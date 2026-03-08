@@ -60,12 +60,21 @@ const revealMessage = document.getElementById('revealMessage');
 const bgMusic = document.getElementById('bgMusic');
 const musicToggle = document.getElementById('musicToggle');
 
-// Share section elements
+// Share section elements (inline - kept for compatibility)
 const shareSection = document.getElementById('shareSection');
 const shareLink = document.getElementById('shareLink');
 const copyBtn = document.getElementById('copyBtn');
 const copyStatus = document.getElementById('copyStatus');
 const viewPreviewBtn = document.getElementById('viewPreviewBtn');
+
+// Share modal elements (popup)
+const shareModal = document.getElementById('shareModal');
+const shareModalBackdrop = document.getElementById('shareModalBackdrop');
+const shareModalClose = document.getElementById('shareModalClose');
+const shareModalLink = document.getElementById('shareModalLink');
+const shareModalCopyBtn = document.getElementById('shareModalCopyBtn');
+const shareModalCopyStatus = document.getElementById('shareModalCopyStatus');
+const shareModalPreviewBtn = document.getElementById('shareModalPreviewBtn');
 
 // Check URL parameters
 function checkViewMode() {
@@ -410,6 +419,20 @@ function setupEventListeners() {
     if (viewPreviewBtn) {
         viewPreviewBtn.addEventListener('click', viewSurprisePreview);
     }
+    
+    // Share modal event listeners
+    if (shareModalClose) {
+        shareModalClose.addEventListener('click', closeShareModal);
+    }
+    if (shareModalBackdrop) {
+        shareModalBackdrop.addEventListener('click', closeShareModal);
+    }
+    if (shareModalCopyBtn) {
+        shareModalCopyBtn.addEventListener('click', copyShareModalLink);
+    }
+    if (shareModalPreviewBtn) {
+        shareModalPreviewBtn.addEventListener('click', previewFromModal);
+    }
 }
 
 // Copy share link to clipboard
@@ -461,22 +484,100 @@ function viewSurprisePreview() {
     window.open(generateShareLink(), '_blank');
 }
 
-// Create surprise (save data and show share link)
+// Close share modal
+function closeShareModal() {
+    shareModal.classList.add('hidden');
+    // Return focus to the create button for accessibility
+    if (createBtn) {
+        createBtn.focus();
+    }
+}
+
+// Copy link from share modal
+function copyShareModalLink() {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareModalLink.value).then(() => {
+            showModalCopySuccess();
+        }).catch((err) => {
+            console.error('Failed to copy:', err);
+            fallbackModalCopy();
+        });
+    } else {
+        fallbackModalCopy();
+    }
+}
+
+// Fallback copy for share modal
+function fallbackModalCopy() {
+    try {
+        shareModalLink.select();
+        shareModalLink.setSelectionRange(0, 99999);
+        const success = document.execCommand('copy');
+        if (success) {
+            showModalCopySuccess();
+        } else {
+            showModalCopyFailure();
+        }
+    } catch (err) {
+        console.error('Fallback copy failed:', err);
+        showModalCopyFailure();
+    }
+}
+
+// Show copy success in modal
+function showModalCopySuccess() {
+    shareModalCopyStatus.textContent = '✅ Link copied to clipboard!';
+    shareModalCopyStatus.classList.remove('hidden');
+    
+    // Update button temporarily
+    const originalText = shareModalCopyBtn.innerHTML;
+    shareModalCopyBtn.innerHTML = '<span class="copy-icon">✅</span><span class="copy-text">Copied!</span>';
+    
+    setTimeout(() => {
+        shareModalCopyStatus.classList.add('hidden');
+        shareModalCopyBtn.innerHTML = originalText;
+    }, 3000);
+}
+
+// Show copy failure in modal
+function showModalCopyFailure() {
+    shareModalCopyStatus.textContent = '❌ Copy failed - please copy manually';
+    shareModalCopyStatus.classList.remove('hidden');
+    setTimeout(() => {
+        shareModalCopyStatus.classList.add('hidden');
+    }, 3000);
+}
+
+// Preview surprise from modal
+function previewFromModal() {
+    window.open(shareModalLink.value, '_blank');
+}
+
+// Create surprise (save data and show share link modal)
 function createSurprise() {
     // Save to localStorage
     if (saveToLocalStorage()) {
-        // Show share section
-        shareSection.classList.remove('hidden');
+        // Generate the share link
+        const link = generateShareLink();
         
-        // Generate and display share link
-        shareLink.value = generateShareLink();
+        // Show the modal popup
+        shareModal.classList.remove('hidden');
+        
+        // Set the link in the modal
+        shareModalLink.value = link;
+        
+        // Focus on the copy button for accessibility
+        if (shareModalCopyBtn) {
+            setTimeout(() => shareModalCopyBtn.focus(), 100);
+        }
+        
+        // Also update inline share section (for compatibility)
+        shareSection.classList.remove('hidden');
+        shareLink.value = link;
         
         // Disable create button and show success
         createBtn.textContent = '✅ Surprise Created!';
         createBtn.disabled = true;
-        
-        // Scroll to share section
-        shareSection.scrollIntoView({ behavior: 'smooth' });
     } else {
         alert('Failed to save surprise. Please try again.');
     }
