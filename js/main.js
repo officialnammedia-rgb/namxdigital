@@ -137,12 +137,16 @@ function compressImage(dataUrl) {
     });
 }
 
-// Encode data for URL (using base64 and compression-friendly encoding)
+// Encode data for URL (using base64 and UTF-8 encoding)
 function encodeDataForUrl(data) {
     try {
         const jsonStr = JSON.stringify(data);
-        // Use base64 encoding that's URL-safe
-        const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+        // Use TextEncoder for proper UTF-8 handling
+        const encoder = new TextEncoder();
+        const uint8Array = encoder.encode(jsonStr);
+        // Convert to base64
+        const binaryStr = Array.from(uint8Array).map(byte => String.fromCharCode(byte)).join('');
+        const base64 = btoa(binaryStr);
         // Make URL-safe
         return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     } catch (e) {
@@ -160,7 +164,15 @@ function decodeDataFromUrl(encoded) {
         while (base64.length % 4) {
             base64 += '=';
         }
-        const jsonStr = decodeURIComponent(escape(atob(base64)));
+        // Decode base64 to binary string
+        const binaryStr = atob(base64);
+        // Convert to Uint8Array and decode with TextDecoder
+        const uint8Array = new Uint8Array(binaryStr.length);
+        for (let i = 0; i < binaryStr.length; i++) {
+            uint8Array[i] = binaryStr.charCodeAt(i);
+        }
+        const decoder = new TextDecoder('utf-8');
+        const jsonStr = decoder.decode(uint8Array);
         return JSON.parse(jsonStr);
     } catch (e) {
         console.error('Failed to decode data:', e);
