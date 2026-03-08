@@ -22,6 +22,13 @@ let queenPhoto = null;
 let balloonPhotos = new Array(8).fill(null);
 let poppedBalloons = 0;
 
+// Interval IDs for cleanup
+let petalsIntervalId = null;
+let roseRainIntervalId = null;
+
+// Reusable AudioContext for pop sounds
+let audioContext = null;
+
 // DOM Elements
 const setupScreen = document.getElementById('setupScreen');
 const openingScreen = document.getElementById('openingScreen');
@@ -120,7 +127,11 @@ function handleQueenPhotoUpload(e) {
         const reader = new FileReader();
         reader.onload = (event) => {
             queenPhoto = event.target.result;
-            queenPreview.innerHTML = `<img src="${queenPhoto}" alt="Queen Photo">`;
+            queenPreview.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = queenPhoto;
+            img.alt = 'Queen Photo';
+            queenPreview.appendChild(img);
             checkAllPhotosUploaded();
         };
         reader.readAsDataURL(file);
@@ -175,7 +186,11 @@ function startSurprise() {
         
         // Display queen photo
         const queenDisplay = document.getElementById('queenPhotoDisplay');
-        queenDisplay.innerHTML = `<img src="${queenPhoto}" alt="My Queen">`;
+        queenDisplay.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = queenPhoto;
+        img.alt = 'My Queen';
+        queenDisplay.appendChild(img);
         
         // Start falling petals
         startPetals();
@@ -189,6 +204,11 @@ function startSurprise() {
 function startPetals() {
     const petalsContainer = document.getElementById('petals');
     const petalEmojis = ['🌹', '🌸', '💮', '🏵️', '🌺'];
+    
+    // Clear any existing interval
+    if (petalsIntervalId) {
+        clearInterval(petalsIntervalId);
+    }
     
     function createPetal() {
         const petal = document.createElement('span');
@@ -204,12 +224,18 @@ function startPetals() {
     }
     
     // Create petals continuously
-    setInterval(createPetal, 300);
+    petalsIntervalId = setInterval(createPetal, 300);
 }
 
 // Show balloon screen
 function showBalloonScreen() {
     openingScreen.classList.add('hidden');
+    
+    // Clear petals interval to prevent memory leak
+    if (petalsIntervalId) {
+        clearInterval(petalsIntervalId);
+        petalsIntervalId = null;
+    }
     
     setTimeout(() => {
         balloonScreen.classList.remove('hidden');
@@ -261,7 +287,16 @@ function popBalloon(index) {
 
 // Play pop sound
 function playPopSound() {
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    // Reuse AudioContext to avoid creating too many instances
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    
+    // Resume context if it was suspended (autoplay policy)
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+    
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
     
@@ -289,8 +324,14 @@ function updateProgress() {
 function showReveal(index) {
     revealModal.classList.remove('hidden');
     
-    // Set photo and message
-    revealPhoto.innerHTML = `<img src="${balloonPhotos[index]}" alt="Surprise Photo">`;
+    // Set photo using createElement for security
+    revealPhoto.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = balloonPhotos[index];
+    img.alt = 'Surprise Photo';
+    revealPhoto.appendChild(img);
+    
+    // Set message
     revealMessage.textContent = messages[index];
     
     // Create confetti
@@ -361,6 +402,11 @@ function startRoseRain() {
     const roseContainer = document.getElementById('roseRain');
     const roseEmojis = ['🌹', '💐', '🌷', '🌸', '💕', '💖'];
     
+    // Clear any existing interval
+    if (roseRainIntervalId) {
+        clearInterval(roseRainIntervalId);
+    }
+    
     function createRose() {
         const rose = document.createElement('span');
         rose.className = 'rose';
@@ -375,7 +421,7 @@ function startRoseRain() {
     }
     
     // Create roses continuously
-    setInterval(createRose, 200);
+    roseRainIntervalId = setInterval(createRose, 200);
 }
 
 // Handle sparkle effect on balloon hover
